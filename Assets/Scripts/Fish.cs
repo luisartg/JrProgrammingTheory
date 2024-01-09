@@ -7,10 +7,12 @@ public class Fish : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 10;
+    [SerializeField]
+    private float _distanceLimit = 5;
 
-    private Vector3 _followDirection;
-    private float _distanceLimit;
-    private Vector3 _centerPoint;
+    private bool limitImpulseAllowed = true;
+    private Vector3 _followDirection = Vector3.zero;
+    private Vector3 _centerPoint = Vector3.zero;
 
     private float timeForNewDirection = 0;
 
@@ -37,6 +39,10 @@ public class Fish : MonoBehaviour
     void Update()
     {
         Swim();
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            _swimType = SwimType.Stop;
+        }
     }
 
     private void Swim()
@@ -51,13 +57,55 @@ public class Fish : MonoBehaviour
 
     private void DoBasicSwimming()
     {
+        if (FishIsInsideLimit())
+        {
+            limitImpulseAllowed = true;
+            SetTowardsRandomDirection();
+        }
+        else
+        {
+            SetTowardsCenter();
+        }
+        fishRb.AddForce(_followDirection * _speed * Time.deltaTime, ForceMode.Force);
+    }
+
+    private bool FishIsInsideLimit()
+    {
+        if ((_centerPoint - transform.position).magnitude <= _distanceLimit)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    private void SetTowardsCenter()
+    {
+        if (limitImpulseAllowed) 
+        {
+            limitImpulseAllowed = false;
+            AddBreakForce(); 
+        }
+        _followDirection = (_centerPoint - transform.position).normalized;
+    }
+
+    private void SetTowardsRandomDirection()
+    {
         if (NeedNewDirection())
         {
+            //AddBreakForce();
             _followDirection = SelectRandomDirection();
-            fishRb.AddForce(_followDirection * (-1) * _speed, ForceMode.Impulse);
-        }
 
-        fishRb.AddForce(_followDirection * _speed, ForceMode.Force);
+        }
+    }
+
+    private void AddBreakForce()
+    {
+        // This is to apply a little break to the force without making a full stop
+        //fishRb.AddForce(_followDirection * (-1) * _speed * Time.deltaTime, ForceMode.Force);
+        fishRb.velocity = Vector3.zero;
     }
 
     private bool NeedNewDirection()
@@ -83,13 +131,24 @@ public class Fish : MonoBehaviour
 
     protected virtual void DoBehaviourSwimming()
     {
-        
+        DoBasicSwimming();
     }
 
     
 
     private void StopSwimming()
     {
+        if (FishIsInsideLimit())
+        {
+            if (fishRb.velocity.magnitude > 0)
+            {
+                fishRb.velocity -= fishRb.velocity * 0.1f * Time.deltaTime;
+            }
+        }
+        else
+        {
+            AddBreakForce();
+        }
     }
 
     public void SetSwimType(SwimType swimType = SwimType.Normal)
