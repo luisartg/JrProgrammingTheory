@@ -1,6 +1,8 @@
 # Project Design Document: FishBowl
   - **Created at**: 01/02/2024
   - **Author**: Luis Art. Guerra
+## NOTE:
+This document was the design of the initial concept of the demo. Even though the basic ideas are still there, the finished product is a little more complex. Don't get confused by the current state of the project. Enjoy!
 
 ## Project Concept
 
