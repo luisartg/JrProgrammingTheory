@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// INHERITANCE
 public class ColorFish : Fish
 {
     [SerializeField]
@@ -11,6 +12,7 @@ public class ColorFish : Fish
     
     private float currentCursorDistance;
 
+    // POLYMORPHISM
     protected override void CheckForSwimType()
     {
         currentCursorDistance = GetCurrentDistanceToMouseCursor();

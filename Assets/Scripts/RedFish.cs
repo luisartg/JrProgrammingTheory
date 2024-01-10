@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// INHERITANCE
 public class RedFish : ColorFish
 {
+    // POLYMORPHISM
     protected override void DoBehaviourSwimming()
     {
         Speed = behaviorSpeed;

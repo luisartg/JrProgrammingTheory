@@ -24,6 +24,7 @@ public class Fish : MonoBehaviour
 
     private SwimType _swimType = SwimType.Normal;
 
+    // ENCAPSULATION
     public float Speed
     {
         get{ return _speed; }
@@ -33,6 +34,7 @@ public class Fish : MonoBehaviour
         }
     }
 
+    // ENCAPSULATION
     protected Vector3 FollowDirection
     {
         get { return _followDirection; }
@@ -70,6 +72,7 @@ public class Fish : MonoBehaviour
         }
     }
 
+    // ABSTRACTION
     private void Swim()
     {
         if (FishIsInsideLimit())
@@ -90,6 +93,7 @@ public class Fish : MonoBehaviour
         fishRb.AddForce(FollowDirection * _speed * Time.deltaTime, ForceMode.Force);
     }
 
+    // ABSTRACTION
     private void SetFishFaceDirection()
     {
         if (fishRb.velocity.x >= 0)
@@ -102,6 +106,7 @@ public class Fish : MonoBehaviour
         }
     }
 
+    // ABSTRACTION
     private void DoBasicSwimming()
     {
         fishAnimator.speed = 1;
@@ -109,6 +114,7 @@ public class Fish : MonoBehaviour
         SetTowardsRandomDirection();   
     }
 
+    // ABSTRACTION
     private bool FishIsInsideLimit()
     {
         if ((_centerPoint - transform.position).magnitude <= _distanceLimit)
@@ -120,7 +126,8 @@ public class Fish : MonoBehaviour
             return false;
         }
     }
-    
+
+    // ABSTRACTION
     private void SetTowardsCenter()
     {
         if (limitImpulseAllowed) 
@@ -131,6 +138,7 @@ public class Fish : MonoBehaviour
         FollowDirection = (_centerPoint - transform.position).normalized;
     }
 
+    // ABSTRACTION
     private void SetTowardsRandomDirection()
     {
         if (NeedNewDirection())
@@ -159,7 +167,7 @@ public class Fish : MonoBehaviour
         return false;
     }
 
-
+    // ABSTRACTION
     private Vector3 SelectRandomDirection()
     {
         int angle = UnityEngine.Random.Range(0, 360);
@@ -174,8 +182,8 @@ public class Fish : MonoBehaviour
         DoBasicSwimming();
     }
 
-    
 
+    // ABSTRACTION
     private void StopSwimming()
     {
         Speed = 0;
