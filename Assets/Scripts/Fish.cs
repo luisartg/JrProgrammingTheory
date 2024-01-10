@@ -5,18 +5,21 @@ using UnityEngine;
 
 public class Fish : MonoBehaviour
 {
+    
     [SerializeField]
-    private float _speed = 10;
+    private float baseSpeed = 100;
+    private float _speed = 100;
     [SerializeField]
     private float _distanceLimit = 5;
 
     private bool limitImpulseAllowed = true;
-    private Vector3 _followDirection = Vector3.zero;
     private Vector3 _centerPoint = Vector3.zero;
+    private Vector3 _followDirection = Vector3.zero;
 
     private float timeForNewDirection = 0;
 
-    private Rigidbody fishRb;
+    protected Rigidbody fishRb;
+    protected Animator fishAnimator;
 
     private SwimType _swimType = SwimType.Normal;
 
@@ -29,16 +32,36 @@ public class Fish : MonoBehaviour
         }
     }
 
+    protected Vector3 FollowDirection
+    {
+        get { return _followDirection; }
+        set { 
+            _followDirection = value;
+            if (value.magnitude == 0)
+            { 
+                //in case there is no direction, we make sure there is one
+                _followDirection.x = 1;
+            } 
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         fishRb = GetComponent<Rigidbody>();
+        fishAnimator = transform.Find("GFX").GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        CheckForSwimType();
         Swim();
+    }
+
+    protected virtual void CheckForSwimType()
+    {
+        // Override this function to make a different checkup to change the swim type
         if (Input.GetKeyDown(KeyCode.Space))
         {
             _swimType = SwimType.Stop;
@@ -47,26 +70,28 @@ public class Fish : MonoBehaviour
 
     private void Swim()
     {
-        switch (_swimType)
-        {
-            case SwimType.Normal: DoBasicSwimming(); break;
-            case SwimType.Stop: StopSwimming(); break;
-            case SwimType.Behavior: DoBehaviourSwimming(); break;
-        }
-    }
-
-    private void DoBasicSwimming()
-    {
         if (FishIsInsideLimit())
         {
-            limitImpulseAllowed = true;
-            SetTowardsRandomDirection();
+            switch (_swimType)
+            {
+                case SwimType.Normal: DoBasicSwimming(); break;
+                case SwimType.Stop: StopSwimming(); break;
+                case SwimType.Behavior: DoBehaviourSwimming(); break;
+            }
         }
         else
         {
             SetTowardsCenter();
         }
-        fishRb.AddForce(_followDirection * _speed * Time.deltaTime, ForceMode.Force);
+        fishRb.AddForce(FollowDirection * _speed * Time.deltaTime, ForceMode.Force);
+    }
+
+    private void DoBasicSwimming()
+    {
+        fishAnimator.speed = 1;
+        Speed = baseSpeed;
+        limitImpulseAllowed = true;
+        SetTowardsRandomDirection();   
     }
 
     private bool FishIsInsideLimit()
@@ -88,7 +113,7 @@ public class Fish : MonoBehaviour
             limitImpulseAllowed = false;
             AddBreakForce(); 
         }
-        _followDirection = (_centerPoint - transform.position).normalized;
+        FollowDirection = (_centerPoint - transform.position).normalized;
     }
 
     private void SetTowardsRandomDirection()
@@ -96,7 +121,7 @@ public class Fish : MonoBehaviour
         if (NeedNewDirection())
         {
             //AddBreakForce();
-            _followDirection = SelectRandomDirection();
+            FollowDirection = SelectRandomDirection();
 
         }
     }
@@ -138,6 +163,7 @@ public class Fish : MonoBehaviour
 
     private void StopSwimming()
     {
+        Speed = 0;
         if (FishIsInsideLimit())
         {
             if (fishRb.velocity.magnitude > 0)
@@ -149,6 +175,20 @@ public class Fish : MonoBehaviour
         {
             AddBreakForce();
         }
+    }
+
+    protected Vector3 GetMouseWorldPosition()
+    {
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = 10;
+        return Camera.main.ScreenToWorldPoint(mousePos);
+    }
+
+    protected float GetCurrentDistanceToMouseCursor()
+    {
+        Vector3 worldPos = GetMouseWorldPosition();
+        Debug.Log($"Current Distance: {(worldPos - transform.position).magnitude}");
+        return (worldPos - transform.position).magnitude;
     }
 
     public void SetSwimType(SwimType swimType = SwimType.Normal)
