@@ -20,6 +20,7 @@ public class Fish : MonoBehaviour
 
     protected Rigidbody fishRb;
     protected Animator fishAnimator;
+    private GameObject GFXObject;
 
     private SwimType _swimType = SwimType.Normal;
 
@@ -49,7 +50,8 @@ public class Fish : MonoBehaviour
     void Start()
     {
         fishRb = GetComponent<Rigidbody>();
-        fishAnimator = transform.Find("GFX").GetComponent<Animator>();
+        GFXObject = transform.Find("GFX").gameObject;
+        fishAnimator = GFXObject.GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -72,6 +74,7 @@ public class Fish : MonoBehaviour
     {
         if (FishIsInsideLimit())
         {
+            limitImpulseAllowed = true;
             switch (_swimType)
             {
                 case SwimType.Normal: DoBasicSwimming(); break;
@@ -83,14 +86,26 @@ public class Fish : MonoBehaviour
         {
             SetTowardsCenter();
         }
+        SetFishFaceDirection();
         fishRb.AddForce(FollowDirection * _speed * Time.deltaTime, ForceMode.Force);
+    }
+
+    private void SetFishFaceDirection()
+    {
+        if (fishRb.velocity.x >= 0)
+        {
+            GFXObject.transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else
+        {
+            GFXObject.transform.localScale = new Vector3(1, 1, 1);
+        }
     }
 
     private void DoBasicSwimming()
     {
         fishAnimator.speed = 1;
         Speed = baseSpeed;
-        limitImpulseAllowed = true;
         SetTowardsRandomDirection();   
     }
 

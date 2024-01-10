@@ -414,6 +414,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6272048642738999456, guid: 2f0e8ad0b4cf96040a8aab33b6db9a9e, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6272048644322987944, guid: 2f0e8ad0b4cf96040a8aab33b6db9a9e, type: 3}
       propertyPath: m_Name
       value: RedFish
