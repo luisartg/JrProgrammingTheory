@@ -1,20 +1,19 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RedFish : ColorFish
+public class GreenFish : ColorFish
 {
     protected override void DoBehaviourSwimming()
     {
         Speed = behaviorSpeed;
         fishAnimator.speed = 2;
-        FollowDirection = GetDirectionTowardsMouseCursor();
+        FollowDirection = GetDirectionAwayFromMouseCursor();
     }
 
-    private Vector3 GetDirectionTowardsMouseCursor()
+    private Vector3 GetDirectionAwayFromMouseCursor()
     {
         Vector3 mousePos = GetMouseWorldPosition();
-        return (mousePos - transform.position).normalized;
+        return (transform.position - mousePos).normalized;
     }
 }
